@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistema profissional de gestão de produção e ponto digital para JK Império">
+    <meta name="theme-color" content="#8B5A2B">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="JK Império">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.json">
+    <title>JK Império - Sistema de Gestão Profissional</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #8B5A2B;
+            --primary-light: #A67C52;
+            --primary-dark: #5D3A1D;
+            --secondary: #2C3E50;
+            --success: #27AE60;
+            --warning: #F39C12;
+            --danger: #E74C3C;
+            --info: #3498DB;
+            --light: #F8F9FA;
+            --dark: #212529;
+            --gray: #6C757D;
+            --border-radius: 12px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body.dark-mode {
+            --light: #1a1a1a;
+            --dark: #F8F9FA;
+            --gray: #A0A0A0;
+            --secondary: #E0E0E0;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F0F2F5;
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: var(--transition);
+        }
+
+        body.dark-mode {
+            background-color: #0d0d0d;
+        }
+
+        .app-wrapper {
+            max-width: 600px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: white;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0,0,0,0.05);
+        }
+
+        body.dark-mode .app-wrapper {
+            background: #1a1a1a;
+        }
+
+        header {
+            background: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            transition: var(--transition);
+        }
+
+        body.dark-mode header {
+            background: #1a1a1a;
+            border-bottom-color: rgba(255,255,255,0.1);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .menu-toggle, .dark-mode-toggle {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: var(--primary);
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .menu-toggle:hover, .dark-mode-toggle:hover {
+            background: var(--light);
+        }
+
+        .brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 900;
+            color: var(--primary);
+            letter-spacing: 1px;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            display: none;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100%;
+            background: white;
+            z-index: 1000;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        body.dark-mode .sidebar {
+            background: #1a1a1a;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .sidebar-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header p {
+            font-size: 13px;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .nav-menu {
+            padding: 20px 0;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border-left: 4px solid transparent;
+        }
+
+        body.dark-mode .nav-item {
+            color: #E0E0E0;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: var(--light);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid var(--light);
+            font-size: 12px;
+            color: var(--gray);
+            text-align: center;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .tab-content {
+            display: none;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--secondary);
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        body.dark-mode .card {
+            background: #2a2a2a;
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--secondary);
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--light);
+            color: var(--primary);
+        }
+
+        .production-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .btn-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: var(--light);
+            color: var(--dark);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .btn-circle:active {
+            transform: scale(0.9);
+        }
+
+        .counter-display {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .btn-add {
+            flex-grow: 1;
+            height: 50px;
+            border-radius: 25px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(139, 90, 43, 0.3);
+            transition: var(--transition);
+        }
+
+        .btn-add:hover {
+            background: var(--primary-dark);
+        }
+
+        .direct-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-styled {
+            flex-grow: 1;
+            height: 45px;
+            padding: 0 15px;
+            border: 1px solid #DDD;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: var(--transition);
+            background: white;
+            color: var(--dark);
+        }
+
+        body.dark-mode .input-styled {
+            background: #3a3a3a;
+            border-color: rgba(255,255,255,0.1);
+            color: #E0E0E0;
+        }
+
+        .input-styled:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(139, 90, 43, 0.1);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--light);
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .history-item {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--light);
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-time {
+            color: var(--gray);
+            font-weight: 600;
+            font-size: 11px;
+            text-align: right;
+            white-space: nowrap;
+            margin-left: 10px;
+        }
+
+        .punch-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn-punch {
+            padding: 20px 10px;
+            border-radius: 12px;
+            border: none;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .btn-punch i { font-size: 24px; }
+        .btn-punch.in { background: var(--success); }
+        .btn-punch.lunch-out { background: var(--warning); }
+        .btn-punch.lunch-in { background: var(--info); }
+        .btn-punch.out { background: var(--danger); }
+
+        .summary-card {
+            background: linear-gradient(135deg, var(--secondary), #1a252f);
+            color: white;
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .summary-value {
+            font-size: 42px;
+            font-weight: 900;
+            color: #2ECC71;
+            margin: 10px 0;
+        }
+
+        .calc-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .calc-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 18px;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--light);
+            color: var(--dark);
+        }
+
+        .calc-btn:active {
+            transform: scale(0.95);
+        }
+
+        .calc-btn.operator {
+            background: var(--primary);
+            color: white;
+        }
+
+        .calc-btn.equal {
+            grid-column: span 2;
+            background: var(--success);
+            color: white;
+        }
+
+        .calc-btn.clear {
+            grid-column: span 2;
+            background: var(--danger);
+            color: white;
+        }
+
+        .calc-display {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            font-size: 24px;
+            font-weight: 700;
+            text-align: right;
+            margin-bottom: 15px;
+            background: var(--light);
+            color: var(--dark);
+        }
+
+        body.dark-mode .calc-display {
+            background: #3a3a3a;
+            color: #E0E0E0;
+        }
+
+        .dev-profile {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .dev-avatar {
+            width: 100px;
+            height: 100px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin: 0 auto 15px;
+            border: 4px solid white;
+            box-shadow: var(--shadow);
+        }
+
+        .usage-guide {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .usage-step {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .step-num {
+            width: 28px;
+            height: 28px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .btn-block {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+
+        .btn-whatsapp { background: #25D366; color: white; }
+        .btn-pdf { background: #E74C3C; color: white; }
+        .btn-finish { background: var(--warning); color: white; margin-top: 20px; }
+        .btn-backup { background: var(--info); color: white; }
+        .btn-delete-all { background: var(--danger); color: white; }
+
+        .punch-history-section {
+            margin-top: 20px;
+        }
+
+        .punch-date-group {
+            margin-bottom: 20px;
+            border: 1px solid var(--light);
+            border-radius: 8px;
+            padding: 12px;
+            background: var(--light);
+        }
+
+        .punch-date-header {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .punch-date-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .punch-date-item {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        body.dark-mode .punch-date-item {
+            background: #3a3a3a;
+        }
+
+        .btn-delete-item {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .btn-delete-item:hover {
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        @media print {
+            .menu-toggle, .dark-mode-toggle, .sidebar, .sidebar-overlay, .production-controls, .direct-input, .btn-block, .nav-menu, .btn-delete-item {
+                display: none !important;
+            }
+            .app-wrapper { max-width: 100%; box-shadow: none; }
+            .card { box-shadow: none; border: 1px solid #000; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-wrapper">
+        <header>
+            <button class="menu-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="brand">JK IMPÉRIO</div>
+            <div class="header-controls">
+                <button class="dark-mode-toggle" onclick="toggleDarkMode()" title="Modo Escuro">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>JK</h2>
+                <p id="user-display-name">Colaborador</p>
+            </div>
+            <div class="nav-menu">
+                <div class="nav-item active" onclick="switchTab('tab-production', this)">
+                    <i class="fas fa-industry"></i> Produção Diária
+                </div>
+                <div class="nav-item" onclick="switchTab('tab-ponto', this)">
+                    <i class="fas fa-clock"></i> Ponto Digital
+                </div>
+                <div class="nav-item" onclick="switchTab('tab-ponto-history', this)">
+                    <i class="fas fa-history"></i> Histórico Ponto
+                </div>
+                <div class="nav-item" onclick="switchTab('tab-calculator', this)">
+                    <i class="fas fa-calculator"></i> Calculadora
+                </div>
+                <div class="nav-item" onclick="switchTab('tab-monthly', this)">
+                    <i class="fas fa-chart-line"></i> Fechamento Mensal
+                </div>
+                <div class="nav-item" onclick="switchTab('tab-settings', this)">
+                    <i class="fas fa-user-cog"></i> Configurações
+                </div>
+                <div class="nav-item" onclick="switchTab('tab-dev', this)">
+                    <i class="fas fa-code"></i> Desenvolvedor
+                </div>
+            </div>
+            <div class="sidebar-footer">
+                v3.2 Professional Edition<br>
+                &copy; 2026 JK Império
+            </div>
+        </div>
+
+        <main class="content">
+            <!-- ABA PRODUÇÃO -->
+            <div id="tab-production" class="tab-content active">
+                <h2 class="section-title"><i class="fas fa-calendar-day"></i> Produção de Hoje</h2>
+                
+                <div class="card">
+                    <div style="background: var(--light); padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 12px; text-align: center; font-weight: 600; color: var(--gray);">
+                        <i class="fas fa-calendar"></i> <span id="today-date">--/--/----</span> | <i class="fas fa-clock"></i> <span id="current-time">--:--</span>
+                    </div>
+
+                    <div class="card-header">
+                        <div class="card-title"><span class="item1-name">Cama Box</span></div>
+                        <span class="badge" id="item1-price-display">R$ 0,00</span>
+                    </div>
+                    <div class="production-controls">
+                        <button class="btn-circle" onclick="adjust('cama', -1)"><i class="fas fa-minus"></i></button>
+                        <span class="counter-display" id="count-cama">0</span>
+                        <button class="btn-add" onclick="adjust('cama', 1)">ADICIONAR +1</button>
+                    </div>
+                    <div class="direct-input">
+                        <input type="number" id="input-cama" class="input-styled" placeholder="Quantidade direta">
+                        <button class="btn-secondary" onclick="launchDirect('cama')">Lançar</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><span class="item2-name">Baú</span></div>
+                        <span class="badge" id="item2-price-display">R$ 0,00</span>
+                    </div>
+                    <div class="production-controls">
+                        <button class="btn-circle" onclick="adjust('bau', -1)"><i class="fas fa-minus"></i></button>
+                        <span class="counter-display" id="count-bau">0</span>
+                        <button class="btn-add" onclick="adjust('bau', 1)">ADICIONAR +1</button>
+                    </div>
+                    <div class="direct-input">
+                        <input type="number" id="input-bau" class="input-styled" placeholder="Quantidade direta">
+                        <button class="btn-secondary" onclick="launchDirect('bau')">Lançar</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title" style="margin-bottom: 10px;">Logs de Atividade</div>
+                    <div class="history-list" id="production-logs">
+                        <div style="color: var(--gray); text-align: center; padding: 10px;">Nenhuma atividade hoje.</div>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <p style="text-transform: uppercase; font-size: 12px; letter-spacing: 1px; opacity: 0.8;">Total Estimado Hoje</p>
+                    <div class="summary-value" id="total-today">R$ 0,00</div>
+                    <button class="btn-block btn-finish" onclick="finishDay()">
+                        <i class="fas fa-check-circle"></i> ENCERRAR E SALVAR NO MÊS
+                    </button>
+                </div>
+            </div>
+
+            <!-- ABA PONTO DIÁRIO -->
+            <div id="tab-ponto" class="tab-content">
+                <h2 class="section-title"><i class="fas fa-clock"></i> Ponto Digital - Hoje</h2>
+                <div class="card">
+                    <div style="background: var(--light); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 13px;">
+                        <strong><i class="fas fa-info-circle"></i> Horários de Referência:</strong><br>
+                        Entrada: 07:00 | Almoço: 12:00 - 13:00 | Saída: 17:00
+                    </div>
+                    <div class="punch-grid">
+                        <button class="btn-punch in" onclick="registerPunch('Entrada')">
+                            <i class="fas fa-sign-in-alt"></i> Entrada
+                        </button>
+                        <button class="btn-punch lunch-out" onclick="registerPunch('Saída Almoço')">
+                            <i class="fas fa-utensils"></i> Almoço
+                        </button>
+                        <button class="btn-punch lunch-in" onclick="registerPunch('Volta Almoço')">
+                            <i class="fas fa-undo"></i> Volta
+                        </button>
+                        <button class="btn-punch out" onclick="registerPunch('Saída')">
+                            <i class="fas fa-sign-out-alt"></i> Saída
+                        </button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Registros de Hoje</div>
+                        <button onclick="undoLastPunch()" style="background:none; border:none; color:var(--danger); font-size:12px; font-weight:600; cursor:pointer;">DESFAZER ÚLTIMO</button>
+                    </div>
+                    <div class="history-list" id="punch-logs">
+                        <div style="color: var(--gray); text-align: center; padding: 10px;">Sem registros de ponto.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABA HISTÓRICO MENSAL DE PONTO -->
+            <div id="tab-ponto-history" class="tab-content">
+                <h2 class="section-title"><i class="fas fa-history"></i> Histórico Mensal de Ponto</h2>
+                <div class="card">
+                    <div style="background: var(--light); padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 12px; text-align: center; font-weight: 600; color: var(--gray);">
+                        <i class="fas fa-calendar-alt"></i> <span id="history-month-label">Mês Atual</span>
+                    </div>
+                    <div class="punch-history-section" id="punch-history-container">
+                        <div style="color: var(--gray); text-align: center; padding: 20px;">Nenhum registro de ponto este mês.</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <button class="btn-block btn-delete-all" onclick="clearAllPunchHistory()">
+                        <i class="fas fa-trash-alt"></i> LIMPAR TODO HISTÓRICO DE PONTO
+                    </button>
+                </div>
+            </div>
+
+            <!-- ABA CALCULADORA -->
+            <div id="tab-calculator" class="tab-content">
+                <h2 class="section-title"><i class="fas fa-calculator"></i> Calculadora</h2>
+                
+                <div class="card">
+                    <div class="card-title" style="margin-bottom: 15px;">Calculadora Simples</div>
+                    <input type="text" class="calc-display" id="calc-display" readonly>
+                    <div class="calc-grid">
+                        <button class="calc-btn" onclick="appendToCalc('7')">7</button>
+                        <button class="calc-btn" onclick="appendToCalc('8')">8</button>
+                        <button class="calc-btn" onclick="appendToCalc('9')">9</button>
+                        <button class="calc-btn operator" onclick="appendToCalc('/')">/</button>
+                        
+                        <button class="calc-btn" onclick="appendToCalc('4')">4</button>
+                        <button class="calc-btn" onclick="appendToCalc('5')">5</button>
+                        <button class="calc-btn" onclick="appendToCalc('6')">6</button>
+                        <button class="calc-btn operator" onclick="appendToCalc('*')">×</button>
+                        
+                        <button class="calc-btn" onclick="appendToCalc('1')">1</button>
+                        <button class="calc-btn" onclick="appendToCalc('2')">2</button>
+                        <button class="calc-btn" onclick="appendToCalc('3')">3</button>
+                        <button class="calc-btn operator" onclick="appendToCalc('-')">−</button>
+                        
+                        <button class="calc-btn" onclick="appendToCalc('0')">0</button>
+                        <button class="calc-btn" onclick="appendToCalc('.')">.</button>
+                        <button class="calc-btn operator" onclick="appendToCalc('+')">+</button>
+                        <button class="calc-btn equal" onclick="calculateResult()">=</button>
+                    </div>
+                    <button class="calc-btn clear" onclick="clearCalc()">LIMPAR</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-title" style="margin-bottom: 15px;">Calculadora de Ganhos</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                        <div>
+                            <label style="font-size: 11px; font-weight: 600; color: var(--gray);">PEÇA 1</label>
+                            <input type="number" id="earn-qty1" class="input-styled" placeholder="Quantidade" style="width: 100%; margin-top: 5px;">
+                        </div>
+                        <div>
+                            <label style="font-size: 11px; font-weight: 600; color: var(--gray);">VALOR UNITÁRIO</label>
+                            <input type="number" id="earn-price1" class="input-styled" placeholder="R$ 0,00" style="width: 100%; margin-top: 5px;" step="0.01">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                        <div>
+                            <label style="font-size: 11px; font-weight: 600; color: var(--gray);">PEÇA 2</label>
+                            <input type="number" id="earn-qty2" class="input-styled" placeholder="Quantidade" style="width: 100%; margin-top: 5px;">
+                        </div>
+                        <div>
+                            <label style="font-size: 11px; font-weight: 600; color: var(--gray);">VALOR UNITÁRIO</label>
+                            <input type="number" id="earn-price2" class="input-styled" placeholder="R$ 0,00" style="width: 100%; margin-top: 5px;" step="0.01">
+                        </div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, var(--secondary), #1a252f); color: white; padding: 20px; border-radius: 12px; text-align: center;">
+                        <p style="font-size: 12px; opacity: 0.8; margin-bottom: 5px;">TOTAL ESTIMADO</p>
+                        <div style="font-size: 36px; font-weight: 900; color: #2ECC71;" id="earn-total">R$ 0,00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABA MENSAL -->
+            <div id="tab-monthly" class="tab-content">
+                <h2 class="section-title"><i class="fas fa-chart-bar"></i> Fechamento Mensal</h2>
+                <div class="summary-card" style="margin-bottom: 20px;">
+                    <p id="current-month-label" style="text-transform: uppercase; font-size: 12px; letter-spacing: 1px; opacity: 0.8;">Mês Atual</p>
+                    <div class="summary-value" id="total-monthly">R$ 0,00</div>
+                    <div style="display: flex; justify-content: space-around; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                        <div>
+                            <div style="font-size: 11px; opacity: 0.7;" class="item1-name">Peça 1</div>
+                            <div style="font-size: 20px; font-weight: 700;" id="monthly-count-item1">0</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 11px; opacity: 0.7;" class="item2-name">Peça 2</div>
+                            <div style="font-size: 20px; font-weight: 700;" id="monthly-count-item2">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-block btn-whatsapp" onclick="sendWhatsApp()">
+                    <i class="fab fa-whatsapp"></i> ENVIAR RELATÓRIO WHATSAPP
+                </button>
+                <button class="btn-block btn-pdf" onclick="window.print()">
+                    <i class="fas fa-file-pdf"></i> GERAR RELATÓRIO PDF
+                </button>
+                <button class="btn-block btn-backup" onclick="exportBackup()">
+                    <i class="fas fa-download"></i> BACKUP DE DADOS
+                </button>
+
+                <div style="margin-top: 40px; text-align: center;">
+                    <button onclick="resetMonth()" style="background:none; border:none; color:var(--danger); font-size:12px; font-weight:600; cursor:pointer; text-decoration: underline;">
+                        LIMPAR TODO O HISTÓRICO MENSAL
+                    </button>
+                </div>
+            </div>
+
+            <!-- ABA CONFIGURAÇÕES -->
+            <div id="tab-settings" class="tab-content">
+                <h2 class="section-title"><i class="fas fa-cog"></i> Configurações</h2>
+                <div class="card">
+                    <div class="card-title" style="margin-bottom: 15px;">Dados do Colaborador</div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="font-size: 12px; font-weight: 600; color: var(--gray);">NOME COMPLETO</label>
+                        <input type="text" id="cfg-user-name" class="input-styled" style="width: 100%; margin-top: 5px;">
+                    </div>
+                    <hr style="margin: 20px 0; opacity: 0.1;">
+                    <div class="card-title" style="margin-bottom: 15px;">Tabela de Preços</div>
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-bottom: 15px;">
+                        <div>
+                            <label style="font-size: 11px; font-weight: 600; color: var(--gray);">NOME PEÇA 1</label>
+                            <input type="text" id="cfg-name1" class="input-styled" style="width: 100%; margin-top: 5px;">
+                        </div>
+                        <div>
+                            <label style="font-size: 11px; font-weight: 600; color: var(--gray);">VALOR (R$)</label>
+                            <input type="number" step="0.01" id="cfg-price1" class="input-styled" style="width: 100%; margin-top: 5px;">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-bottom: 15px;">
+                        <div>
+                            <label style="font-size: 11px; font-weight: 600; color: var(--gray);">NOME PEÇA 2</label>
+                            <input type="text" id="cfg-name2" class="input-styled" style="width: 100%; margin-top: 5px;">
+                        </div>
+                        <div>
+                            <label style="font-size: 11px; font-weight: 600; color: var(--gray);">VALOR (R$)</label>
+                            <input type="number" step="0.01" id="cfg-price2" class="input-styled" style="width: 100%; margin-top: 5px;">
+                        </div>
+                    </div>
+                    <button class="btn-block btn-add" style="margin-top: 25px;" onclick="saveSettings()">
+                        <i class="fas fa-save"></i> SALVAR CONFIGURAÇÕES
+                    </button>
+                </div>
+            </div>
+
+            <!-- ABA DESENVOLVEDOR -->
+            <div id="tab-dev" class="tab-content">
+                <h2 class="section-title"><i class="fas fa-code"></i> Desenvolvedor</h2>
+                <div class="card">
+                    <div class="dev-profile">
+                        <div class="dev-avatar">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <h3 style="font-size: 20px; color: var(--secondary);">Devanildo Galvão</h3>
+                        <p style="color: var(--primary); font-weight: 600; font-size: 14px;">Software Developer & UI Designer</p>
+                        <p style="font-size: 13px; color: var(--gray); margin-top: 10px; padding: 0 20px;">
+                            Especialista em soluções customizadas para automação de processos e gestão de produtividade.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-star"></i> Novidades v3.2</div>
+                    <ul style="font-size: 13px; color: var(--gray); margin-top: 10px; padding-left: 20px;">
+                        <li style="margin-bottom: 8px;"><strong>Exclusão Individual:</strong> Remova registros de ponto específicos com um clique.</li>
+                        <li style="margin-bottom: 8px;"><strong>Limpar Histórico Completo:</strong> Botão para apagar todo o histórico de ponto do mês.</li>
+                        <li style="margin-bottom: 8px;"><strong>Data e Hora Detalhadas:</strong> Todos os registros mostram data e hora exata.</li>
+                        <li style="margin-bottom: 8px;"><strong>Histórico Mensal de Ponto:</strong> Visualize todos os seus registros do mês com data e hora.</li>
+                        <li style="margin-bottom: 8px;"><strong>Calculadora Integrada:</strong> Faça cálculos rápidos sem sair do app.</li>
+                        <li><strong>Modo Escuro:</strong> Proteja seus olhos em ambientes com pouca luz.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-book-open"></i> Modo de Uso</div>
+                    <div class="usage-guide">
+                        <div class="usage-step">
+                            <div class="step-num">1</div>
+                            <p style="font-size: 13px;"><strong>Configure seu Perfil:</strong> Vá em "Configurações" e preencha seu nome e valores.</p>
+                        </div>
+                        <div class="usage-step">
+                            <div class="step-num">2</div>
+                            <p style="font-size: 13px;"><strong>Registre seu Ponto:</strong> Use a aba "Ponto Digital" para marcar seus horários.</p>
+                        </div>
+                        <div class="usage-step">
+                            <div class="step-num">3</div>
+                            <p style="font-size: 13px;"><strong>Lance sua Produção:</strong> Na aba principal, adicione as peças conforme finalizar.</p>
+                        </div>
+                        <div class="usage-step">
+                            <div class="step-num">4</div>
+                            <p style="font-size: 13px;"><strong>Consulte Histórico:</strong> Veja todos os seus pontos do mês na aba "Histórico Ponto".</p>
+                        </div>
+                        <div class="usage-step">
+                            <div class="step-num">5</div>
+                            <p style="font-size: 13px;"><strong>Encerre o Dia:</strong> Clique em "Encerrar Dia" para salvar no fechamento mensal.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'jk_pro_system_v3_2';
+        let state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+            userName: "Colaborador",
+            daily: { cama: 0, bau: 0 },
+            monthly: { cama: 0, bau: 0 },
+            prices: { name1: "Cama Box", price1: 2.00, name2: "Baú", price2: 12.00 },
+            history: [],
+            punches: [],
+            monthlyPunches: []
+        };
+
+        let calcDisplay = '';
+
+        function init() {
+            render();
+            updateClock();
+            setInterval(updateClock, 1000);
+            
+            document.getElementById('cfg-user-name').value = state.userName;
+            document.getElementById('cfg-name1').value = state.prices.name1;
+            document.getElementById('cfg-price1').value = state.prices.price1;
+            document.getElementById('cfg-name2').value = state.prices.name2;
+            document.getElementById('cfg-price2').value = state.prices.price2;
+
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const date = now.toLocaleDateString('pt-BR');
+            const time = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('today-date').innerText = date;
+            document.getElementById('current-time').innerText = time;
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            el.classList.add('active');
+            toggleSidebar();
+            window.scrollTo(0, 0);
+
+            if (tabId === 'tab-ponto-history') {
+                renderPunchHistory();
+            }
+        }
+
+        function adjust(item, amount) {
+            state.daily[item] += amount;
+            if (state.daily[item] < 0) state.daily[item] = 0;
+            
+            if (amount !== 0) {
+                const name = item === 'cama' ? state.prices.name1 : state.prices.name2;
+                addLog(`${amount > 0 ? '+' : ''}${amount} ${name}`);
+            }
+            saveAndRender();
+        }
+
+        function launchDirect(item) {
+            const input = document.getElementById(`input-${item}`);
+            const val = parseInt(input.value);
+            if (!isNaN(val) && val > 0) {
+                state.daily[item] += val;
+                const name = item === 'cama' ? state.prices.name1 : state.prices.name2;
+                addLog(`Lançamento direto: +${val} ${name}`);
+                input.value = '';
+                saveAndRender();
+            }
+        }
+
+        function addLog(text) {
+            const now = new Date();
+            const date = now.toLocaleDateString('pt-BR');
+            const time = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            state.history.unshift({ date, time, text });
+            if (state.history.length > 20) state.history.pop();
+        }
+
+        function registerPunch(type) {
+            const now = new Date();
+            const date = now.toLocaleDateString('pt-BR');
+            const time = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            state.punches.push({ type, date, time });
+            state.monthlyPunches.push({ type, date, time });
+            saveAndRender();
+            alert(`Ponto de ${type} registrado às ${time}`);
+        }
+
+        function undoLastPunch() {
+            if (state.punches.length > 0) {
+                if (confirm("Remover o último registro de ponto de hoje?")) {
+                    const removed = state.punches.pop();
+                    state.monthlyPunches = state.monthlyPunches.filter(p => !(p.type === removed.type && p.date === removed.date && p.time === removed.time));
+                    saveAndRender();
+                }
+            }
+        }
+
+        function deletePunchRecord(index) {
+            if (confirm("Tem certeza que deseja remover este registro de ponto?")) {
+                state.monthlyPunches.splice(index, 1);
+                saveAndRender();
+                renderPunchHistory();
+            }
+        }
+
+        function clearAllPunchHistory() {
+            if (confirm("🛑 ATENÇÃO: Isso apagará TODO o histórico de ponto do mês. Continuar?")) {
+                state.monthlyPunches = [];
+                state.punches = [];
+                saveAndRender();
+                renderPunchHistory();
+                alert("✅ Histórico de ponto limpo com sucesso!");
+            }
+        }
+
+        function renderPunchHistory() {
+            const container = document.getElementById('punch-history-container');
+            
+            if (state.monthlyPunches.length === 0) {
+                container.innerHTML = '<div style="color: var(--gray); text-align: center; padding: 20px;">Nenhum registro de ponto este mês.</div>';
+                return;
+            }
+
+            const groupedByDate = {};
+            state.monthlyPunches.forEach((punch, index) => {
+                if (!groupedByDate[punch.date]) {
+                    groupedByDate[punch.date] = [];
+                }
+                groupedByDate[punch.date].push({ ...punch, index });
+            });
+
+            const sortedDates = Object.keys(groupedByDate).sort((a, b) => {
+                const [dayA, monthA, yearA] = a.split('/').map(Number);
+                const [dayB, monthB, yearB] = b.split('/').map(Number);
+                return new Date(yearB, monthB - 1, dayB) - new Date(yearA, monthA - 1, dayA);
+            });
+
+            container.innerHTML = sortedDates.map(date => {
+                const punches = groupedByDate[date];
+                return `
+                    <div class="punch-date-group">
+                        <div class="punch-date-header">
+                            📅 ${date}
+                        </div>
+                        <div class="punch-date-items">
+                            ${punches.map((p, idx) => `
+                                <div class="punch-date-item">
+                                    <div style="flex-grow: 1;">
+                                        <strong>${p.type}</strong> <span style="color: var(--gray); font-size: 11px;">${p.time}</span>
+                                    </div>
+                                    <button class="btn-delete-item" onclick="deletePunchRecord(${state.monthlyPunches.indexOf(p)})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function appendToCalc(value) {
+            if (value === '=') {
+                calculateResult();
+            } else {
+                calcDisplay += value;
+                document.getElementById('calc-display').value = calcDisplay;
+            }
+        }
+
+        function calculateResult() {
+            try {
+                calcDisplay = eval(calcDisplay).toString();
+                document.getElementById('calc-display').value = calcDisplay;
+            } catch {
+                calcDisplay = 'Erro';
+                document.getElementById('calc-display').value = calcDisplay;
+                setTimeout(() => { calcDisplay = ''; document.getElementById('calc-display').value = ''; }, 1000);
+            }
+        }
+
+        function clearCalc() {
+            calcDisplay = '';
+            document.getElementById('calc-display').value = '';
+        }
+
+        document.addEventListener('input', function(e) {
+            if (e.target.id.startsWith('earn-')) {
+                updateEarnings();
+            }
+        });
+
+        function updateEarnings() {
+            const qty1 = parseFloat(document.getElementById('earn-qty1').value) || 0;
+            const price1 = parseFloat(document.getElementById('earn-price1').value) || 0;
+            const qty2 = parseFloat(document.getElementById('earn-qty2').value) || 0;
+            const price2 = parseFloat(document.getElementById('earn-price2').value) || 0;
+            
+            const total = (qty1 * price1) + (qty2 * price2);
+            document.getElementById('earn-total').innerText = `R$ ${total.toFixed(2)}`;
+        }
+
+        function saveSettings() {
+            state.userName = document.getElementById('cfg-user-name').value || "Colaborador";
+            state.prices.name1 = document.getElementById('cfg-name1').value || "Peça 1";
+            state.prices.price1 = parseFloat(document.getElementById('cfg-price1').value) || 0;
+            state.prices.name2 = document.getElementById('cfg-name2').value || "Peça 2";
+            state.prices.price2 = parseFloat(document.getElementById('cfg-price2').value) || 0;
+            
+            saveAndRender();
+            alert("✅ Configurações salvas com sucesso!");
+            switchTab('tab-production', document.querySelectorAll('.nav-item')[0]);
+        }
+
+        function finishDay() {
+            if (state.daily.cama === 0 && state.daily.bau === 0 && state.punches.length === 0) {
+                alert("Nada para salvar hoje!");
+                return;
+            }
+            if (confirm("Deseja encerrar o dia? A produção será somada ao acumulado mensal.")) {
+                state.monthly.cama += state.daily.cama;
+                state.monthly.bau += state.daily.bau;
+                state.daily.cama = 0;
+                state.daily.bau = 0;
+                state.history = [];
+                state.punches = [];
+                saveAndRender();
+                alert("✅ Dia finalizado e salvo no relatório mensal!");
+            }
+        }
+
+        function resetMonth() {
+            if (confirm("🛑 ATENÇÃO: Isso apagará todo o histórico do mês. Continuar?")) {
+                state.monthly = { cama: 0, bau: 0 };
+                state.monthlyPunches = [];
+                saveAndRender();
+            }
+        }
+
+        function exportBackup() {
+            const backup = JSON.stringify(state, null, 2);
+            const blob = new Blob([backup], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `jk_imperio_backup_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function saveAndRender() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            render();
+        }
+
+        function render() {
+            document.getElementById('user-display-name').innerText = state.userName;
+            
+            document.querySelectorAll('.item1-name').forEach(el => el.innerText = state.prices.name1);
+            document.querySelectorAll('.item2-name').forEach(el => el.innerText = state.prices.name2);
+            document.getElementById('item1-price-display').innerText = `R$ ${state.prices.price1.toFixed(2)}`;
+            document.getElementById('item2-price-display').innerText = `R$ ${state.prices.price2.toFixed(2)}`;
+
+            document.getElementById('count-cama').innerText = state.daily.cama;
+            document.getElementById('count-bau').innerText = state.daily.bau;
+            const totalToday = (state.daily.cama * state.prices.price1) + (state.daily.bau * state.prices.price2);
+            document.getElementById('total-today').innerText = `R$ ${totalToday.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+
+            const logContainer = document.getElementById('production-logs');
+            if (state.history.length === 0) {
+                logContainer.innerHTML = '<div style="color: var(--gray); text-align: center; padding: 10px;">Nenhuma atividade hoje.</div>';
+            } else {
+                logContainer.innerHTML = state.history.map(h => `
+                    <div class="history-item">
+                        <span>${h.text}</span>
+                        <span class="history-time">${h.date}<br>${h.time}</span>
+                    </div>
+                `).join('');
+            }
+
+            const punchContainer = document.getElementById('punch-logs');
+            if (state.punches.length === 0) {
+                punchContainer.innerHTML = '<div style="color: var(--gray); text-align: center; padding: 10px;">Sem registros de ponto.</div>';
+            } else {
+                punchContainer.innerHTML = state.punches.map(p => `
+                    <div class="history-item">
+                        <span style="font-weight: 600; color: var(--primary);">${p.type}</span>
+                        <span class="history-time">${p.date}<br>${p.time}</span>
+                    </div>
+                `).join('');
+            }
+
+            const now = new Date();
+            const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+            document.getElementById('current-month-label').innerText = `ACUMULADO: ${monthNames[now.getMonth()]} / ${now.getFullYear()}`;
+            document.getElementById('history-month-label').innerText = `${monthNames[now.getMonth()]} / ${now.getFullYear()}`;
+            document.getElementById('monthly-count-item1').innerText = state.monthly.cama;
+            document.getElementById('monthly-count-item2').innerText = state.monthly.bau;
+            const totalMonthly = (state.monthly.cama * state.prices.price1) + (state.monthly.bau * state.prices.price2);
+            document.getElementById('total-monthly').innerText = `R$ ${totalMonthly.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+        }
+
+        function sendWhatsApp() {
+            const totalToday = (state.daily.cama * state.prices.price1) + (state.daily.bau * state.prices.price2);
+            const totalMonthly = (state.monthly.cama * state.prices.price1) + (state.monthly.bau * state.prices.price2);
+            const date = new Date().toLocaleDateString('pt-BR');
+            const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            
+            let text = `*RELATÓRIO DE PRODUÇÃO - ${state.userName.toUpperCase()}*\n`;
+            text += `📅 Data: ${date} às ${time}\n\n`;
+            
+            text += `⏰ *Ponto Digital de Hoje:*\n`;
+            if (state.punches.length === 0) text += `_Sem registros hoje_\n`;
+            else state.punches.forEach(p => text += `• ${p.type}: ${p.time}\n`);
+            
+            text += `\n📦 *Produção de Hoje:*\n`;
+            text += `• ${state.prices.name1}: ${state.daily.cama} un.\n`;
+            text += `• ${state.prices.name2}: ${state.daily.bau} un.\n`;
+            text += `💰 *Total Hoje: R$ ${totalToday.toFixed(2)}*\n\n`;
+            
+            text += `📊 *Acumulado Mensal:*\n`;
+            text += `• ${state.prices.name1}: ${state.monthly.cama} un.\n`;
+            text += `• ${state.prices.name2}: ${state.monthly.bau} un.\n`;
+            text += `✅ *Total Mês: R$ ${totalMonthly.toFixed(2)}*`;
+            
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        init();
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then((registration) => {
+                        console.log('Service Worker registrado com sucesso:', registration);
+                    })
+                    .catch((error) => {
+                        console.log('Erro ao registrar Service Worker:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
